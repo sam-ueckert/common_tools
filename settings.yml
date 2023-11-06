@@ -1,0 +1,18 @@
+
+file_urls:
+  - "https://supportkb.dell.com/attachment/ka06P000000oXtSQAU/EMCHardwareReleaseEndofServiceLifeNotifications_pkb_en_US_1.xlsx"
+  - "https://supportkb.dell.com/attachment/ka06P000000oXtSQAU/EMCSoftwareReleaseandEndofServiceLifeNotifications_pkb_en_US_1.xlsx"
+  - "https://supportkb.dell.com/attachment/ka06P000000oXtSQAU/EMCOperating_EnvironmentReleaseandEndofServiceLifeNotifications_pkb_en_US_1.xlsx"
+unity_user: "virtRO"
+unity_pw: "xxx"
+inventory_file: "StorageInventory.xlsx"
+inventory_test: "StorageTest.xlsx"
+api_url: "/api/types/basicSystemInfo/instances/"
+no_of_consumers: 10
+output_file: "UnityInventory.json"
+error_file: "UnityError.json"
+output_dir: "./output"
+jumpbox: "wrboadm00000p01"
+service_account_username: "wsospowerbisvc"
+iics_vip: "etladtvip.adt.np.costco.com"
+scp_destination_directory: "/INFA/IICS/SrcFiles/INFRA/Response/Unity"
