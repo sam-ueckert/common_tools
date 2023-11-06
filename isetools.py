@@ -5,7 +5,7 @@ import os
 
 my_path = os.path.dirname(os.path.abspath(__file__))
 print(my_path)
-with open(f'{my_path}\settings.yml', 'r') as f:
+with open(f'{my_path}\\settings.yml', 'r') as f:
     settings = yaml.safe_load(f)
 
 
