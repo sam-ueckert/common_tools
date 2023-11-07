@@ -2,5 +2,5 @@ citrix_lifecycle_url: "https://www.citrix.com/support/product-lifecycle/product-
 output_dir: "./output"
 service_account_username: "wsospowerbisvc"
 iics_vip: "etladtvip.adt.np.costco.com"
-scp_destination_directory: "/INFA/IICS/SrcFiles/INFRA/Response/Unity"
-lifecycle_filename: "citrix_lifecycle.csv"
+scp_destination_directory: "/INFA/IICS/SrcFiles/INFRA/Response/Citrix"
+lifecycle_filename: "citrix_lifecycle.json"
