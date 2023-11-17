@@ -1,0 +1,7 @@
+# this is a template file for settings.yml. copy it to settings.yml
+citrix_lifecycle_url: "https://www.citrix.com/support/product-lifecycle/product-matrix.html"
+output_dir: "./output"
+service_account_username: "wsospowerbisvc"
+iics_vip: "etladtvip.adt.np.costco.com"
+scp_destination_directory: "/INFA/IICS/SrcFiles/INFRA/Response/Citrix"
+lifecycle_filename: "citrix_lifecycle.json"
