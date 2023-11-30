@@ -35,6 +35,8 @@ log.exception("exception")
 import logging, logging.config
 import functools
 import json
+import gzip
+import io
 
 def setup_logger(filename=''):
     DEFAULT_LOGGING = {
@@ -129,7 +131,15 @@ def to_json_file(json_data: json, filename: str):
 	with open(filename, "w") as outfile:
 		outfile.write(json_data)
 		outfile.close()
-          
+
+@log_exceptions
+def to_gzip_file(data_text: str, filename: str):
+	with gzip.open(filename, 'wb') as output:
+	# We cannot directly write Python objects like strings!
+	# We must first convert them into a bytes format using io.BytesIO() and then write it
+		with io.TextIOWrapper(output, encoding='utf-8') as encode:
+			encode.write(data_text)
+
 if __name__ == '__main__':
     print("Example logging (you are running this as a script instead of importing)")
     log = setup_logger()
