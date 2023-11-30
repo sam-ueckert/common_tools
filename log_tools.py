@@ -38,7 +38,30 @@ import json
 import gzip
 import io
 import time
+from typing import Callable, ParamSpec, Concatenate, TypeVar, Optional
 
+Param = ParamSpec("Param")
+RetType = TypeVar("RetType")
+OriginalFunc = Callable[Param, RetType]
+DecoratedFunc = Callable[Param, RetType]
+
+def log_exceptions(func:OriginalFunc=None, re_raise: Optional[bool]=True) -> DecoratedFunc:
+    if func is None:
+        return functools.partial(log_exceptions, re_raise=re_raise)
+
+    @functools.wraps(func)
+    def decorated(*args, **kwargs) -> RetType:
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            logger = logging.getLogger(func.__name__)
+            logger.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
+            if re_raise:
+                raise e
+
+    return decorated
+
+@log_exceptions
 def setup_logger(filename='') -> logging.Logger:
     DEFAULT_LOGGING = {
     'version': 1,
@@ -83,22 +106,6 @@ def setup_logger(filename='') -> logging.Logger:
 
     logger = logging.getLogger()
     return logger
-
-def log_exceptions(func=None, re_raise=True) -> function:
-    if func is None:
-        return functools.partial(log_exceptions, re_raise=re_raise)
-
-    @functools.wraps(func)
-    def decorated(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            logger = logging.getLogger(func.__name__)
-            logger.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
-            if re_raise:
-                raise e
-
-    return decorated
 
 @log_exceptions
 def format_elapsed_time(elapsed_seconds:float) -> str:
