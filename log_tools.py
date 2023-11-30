@@ -36,7 +36,7 @@ import logging, logging.config
 import functools
 import json
 
-def setup_logger(filepath=''):
+def setup_logger(filename=''):
     DEFAULT_LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -63,7 +63,7 @@ def setup_logger(filepath=''):
             'level': 'INFO',
             'formatter': 'standard',
             'class': 'logging.FileHandler',
-            'filename': filepath,
+            'filename': filename,
         },
     },
     'loggers': {
@@ -73,7 +73,7 @@ def setup_logger(filepath=''):
               },
               }
     }
-    if filepath:
+    if filename:
          logging.config.dictConfig(DEFAULT_LOGGING)
     else:
         logging.basicConfig(level=logging.INFO)
