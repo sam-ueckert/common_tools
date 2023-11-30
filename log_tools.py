@@ -37,8 +37,9 @@ import functools
 import json
 import gzip
 import io
+import time
 
-def setup_logger(filename=''):
+def setup_logger(filename='') -> logging.Logger:
     DEFAULT_LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -83,7 +84,7 @@ def setup_logger(filename=''):
     logger = logging.getLogger()
     return logger
 
-def log_exceptions(func=None, re_raise=True):
+def log_exceptions(func=None, re_raise=True) -> function:
     if func is None:
         return functools.partial(log_exceptions, re_raise=re_raise)
 
@@ -100,7 +101,7 @@ def log_exceptions(func=None, re_raise=True):
     return decorated
 
 @log_exceptions
-def format_elapsed_time(elapsed_seconds:float):
+def format_elapsed_time(elapsed_seconds:float) -> str:
     hours = 0
     minutes = 0
     seconds = 0
@@ -117,15 +118,19 @@ def format_elapsed_time(elapsed_seconds:float):
 
     return f'{hours}:{minutes}:{seconds}'
 
+def get_timestamp_for_filename(time_obj: time) -> str:
+    # standardized timestamp to append to filename
+    return f"{time_obj.strftime('%H_%M__%m_%d_%Y')}"
+
 @log_exceptions
-def load_json_file(filename: str):
+def load_json_file(filename: str) -> dict:
 	with open(filename, "r") as openfile:
 		json_object = json.load(openfile)
 		openfile.close()
 		return json_object
 	
 @log_exceptions
-def to_json_file(json_data: json, filename: str):
+def to_json_file(json_data: json, filename: str) -> None:
 	if not type(json_data) is str:
 		json_data = json.dumps(json_data, indent=4)
 	with open(filename, "w") as outfile:
@@ -133,7 +138,7 @@ def to_json_file(json_data: json, filename: str):
 		outfile.close()
 
 @log_exceptions
-def to_gzip_file(data_text: str, filename: str):
+def to_gzip_file(data_text: str, filename: str) -> None:
 	with gzip.open(filename, 'wb') as output:
 	# We cannot directly write Python objects like strings!
 	# We must first convert them into a bytes format using io.BytesIO() and then write it
