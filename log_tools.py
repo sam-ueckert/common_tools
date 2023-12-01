@@ -34,12 +34,8 @@ log.exception("exception")
 """
 import logging, logging.config
 import functools
-import path
-import yaml
 from typing import Callable, ParamSpec, TypeVar, Optional
-from .file_tools import get_shared_settings
 
-shared_settings = get_shared_settings()
 
 Param = ParamSpec("Param")
 RetType = TypeVar("RetType")
@@ -70,8 +66,7 @@ def setup_logger(filename='') -> logging.Logger:
     'formatters': { 
         'standard': { 
             'format': '%(asctime)s.%(msecs)03d [%(levelname)s] %(name)s: %(message)s',
-            'datefmt': shared_settings['timestamp_format']
-            # 'datefmt': "%Y-%m-%d %H:%M:%S %Z%z"
+            'datefmt': "%Y-%m-%d %H:%M:%S %Z%z"
         },
     },
     'handlers': { 
