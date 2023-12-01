@@ -8,8 +8,7 @@ import time
 import path
 import yaml
 # from log_tools import log_exceptions
-from . import log_tools
-log_exceptions = log_tools.log_exceptions
+from .log_tools import log_exceptions
 
 @log_exceptions
 def get_yaml_settings(directory, filename):
