@@ -5,8 +5,8 @@ import json
 import gzip
 import io
 import time
-from log_tools import log_exceptions
-
+from . import log_tools
+log_exceptions = log_tools.log_exceptions
 
 @log_exceptions
 def format_elapsed_time(elapsed_seconds:float) -> str:
