@@ -5,8 +5,20 @@ import json
 import gzip
 import io
 import time
+import path
+import yaml
 from . import log_tools
 log_exceptions = log_tools.log_exceptions
+
+@log_exceptions
+def get_yaml_settings(directory, filename):
+    with open(f'{directory}/{filename}', 'r') as f:
+        return yaml.safe_load(f)
+
+@log_exceptions
+def get_shared_settings():
+    current_directory = path.Path(__file__).parent.abspath()
+    return get_yaml_settings(current_directory, 'shared_settings.yml')
 
 @log_exceptions
 def format_elapsed_time(elapsed_seconds:float) -> str:
