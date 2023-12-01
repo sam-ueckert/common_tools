@@ -37,8 +37,9 @@ import functools
 import path
 import yaml
 from typing import Callable, ParamSpec, TypeVar, Optional
-from . import file_tools
-shared_settings = file_tools.get_shared_settings()
+from file_tools import get_shared_settings
+
+shared_settings = get_shared_settings()
 
 Param = ParamSpec("Param")
 RetType = TypeVar("RetType")
