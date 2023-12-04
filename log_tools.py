@@ -86,7 +86,7 @@ def setup_logger(filename='') -> logging.Logger:
     'loggers': {
          '': {
               'level': 'INFO',
-              'handlers' : ['default', 'warning', 'logfile']
+              'handlers' : ['default', 'logfile']
               },
               }
     }
