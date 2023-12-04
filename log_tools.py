@@ -76,12 +76,6 @@ def setup_logger(filename='') -> logging.Logger:
             'class': 'logging.StreamHandler',
             'stream': 'ext://sys.stdout',  # Default is stderr
         },
-        # 'warning': { 
-        #     'level': 'WARNING',
-        #     'formatter': 'standard',
-        #     'class': 'logging.StreamHandler',
-        #     'stream': 'ext://sys.stderr',  # Default is stderr
-        # },
         'logfile': { 
             'level': 'INFO',
             'formatter': 'standard',
