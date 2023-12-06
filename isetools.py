@@ -17,6 +17,10 @@ def decoder(encoded_password):
     return pw
 
 
+def encoder(password):
+    encoded_password = base64.b64encode(password.encode('utf-8'))
+    return encoded_password
+
 class AsyncConsumer:
     def __init__(self, number_of_consumers: int, consumer, items):
         self.number_of_consumers = number_of_consumers
