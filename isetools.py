@@ -2,12 +2,11 @@ import yaml
 import asyncio
 import base64
 import os
+import path
 
-my_path = os.path.dirname(os.path.abspath(__file__))
-print(my_path)
-with open(f'{my_path}\\settings.yml', 'r') as f:
+my_path = path.Path(__file__).parent.abspath()
+with open(f"{my_path / 'settings.yml'}", 'r') as f:
     settings = yaml.safe_load(f)
-
 
 # Get the password from the command line argument and decode it   
 def decoder(encoded_password):
