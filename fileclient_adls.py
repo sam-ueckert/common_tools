@@ -35,12 +35,11 @@ from azure.storage.filedatalake import (
 from azure.core.paging import ItemPaged
 from azure.core.exceptions import ResourceModifiedError
 import sys, os
+import time
 
 
 class AdlsConnection:
     # this class allows us to use an ADLS filesystem
-    service_client = None
-    file_system_client = None
 
     def __init__(
         self,
@@ -106,6 +105,18 @@ class AdlsConnection:
         Returns an object to interact with this specific directory in ADLS filesystem
         """
         directory_client = self.file_system_client.create_directory(directory_path)
+        return directory_client
+
+    def create_daily_folders(self, basepath: str) -> DataLakeDirectoryClient:
+        directory_client = None
+        year = time.strftime("%Y")
+        month = time.strftime("%m")
+        day = time.strftime("%d")
+        new_path = ""
+        for item in [basepath, year, month, day]:
+            new_path = f"{new_path}/{item}"
+            print(f"new_path: {new_path}")
+            directory_client = self.create_directory(new_path)
         return directory_client
 
     def download_file_from_directory(
