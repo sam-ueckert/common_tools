@@ -140,8 +140,8 @@ class AdlsConnection:
         directory_client: DataLakeDirectoryClient,
         local_path: str,
         file_name: str,
-        overwrite=True,
         adls_filename: str | None = None,
+        overwrite=True,
     ) -> None:
         """
         Uploads a local file to ADLS, by default this WILL overwrite an existing file of the same name
