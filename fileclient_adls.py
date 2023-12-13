@@ -48,24 +48,30 @@ class AdlsConnection:
         client_secret: str,
         account_url: str,
         file_system_name: str,
+        disable_http_logging: bool = True,
     ) -> None:
         """
         Setup connection and authenticate to ADLS
         account_url should look like: 'https://adt-calfit-adls@adtedfdatalake.dfs.core.windows.net/'
         file_system_name should look like: 'adt-calfit-adls'
         """
-        try:
-            credential = ClientSecretCredential(tenant_id, client_id, client_secret)
-            self.service_client = DataLakeServiceClient(
-                account_url=account_url, credential=credential
+        if disable_http_logging:
+            import logging
+
+            azure_http_logger = logging.getLogger(
+                "azure.core.pipeline.policies.http_logging_policy"
             )
-            self.file_system_name = file_system_name
-            if self.service_client:
-                self.file_system_client = self.service_client.get_file_system_client(
-                    file_system=file_system_name
-                )
-        except Exception as e:
-            print("Failed to create service client:", e)
+            azure_http_logger.setLevel(logging.WARNING)  # this was too talky
+
+        credential = ClientSecretCredential(tenant_id, client_id, client_secret)
+        self.service_client = DataLakeServiceClient(
+            account_url=account_url, credential=credential
+        )
+        self.file_system_name = file_system_name
+        if self.service_client:
+            self.file_system_client = self.service_client.get_file_system_client(
+                file_system=file_system_name
+            )
 
     def get_file_system_client(self, file_system_name: str) -> None:
         """
