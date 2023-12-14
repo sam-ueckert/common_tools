@@ -1,1 +1,2 @@
 timestamp_format: "%Y-%m-%d %Z%z %H:%M:%S"
+prefix_delimiter: "_20" # used to split filenames on timestamp
