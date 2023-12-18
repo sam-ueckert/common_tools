@@ -8,7 +8,7 @@ import time
 import path
 import yaml
 import sys
-import glob, os
+import glob, os, shutil
 from logging import Logger
 
 # need this before importing from log_tools to prevent relative import issue
@@ -174,6 +174,47 @@ def to_gzip_file(data_text: str, filename: str) -> None:
         # We must first convert them into a bytes format using io.BytesIO() and then write it
         with io.TextIOWrapper(output, encoding="utf-8") as encode:
             encode.write(data_text)
+
+
+@log_exceptions
+def get_directory_path_from_filepath(filepath):
+    path_elements = separate_and_strip_path_elements(filepath)
+    dir_path = ""
+    for path_element in path_elements[:-1]:
+        dir_path = os.path.join(dir_path, path_element)
+    return dir_path
+
+
+@log_exceptions
+def gzip_file(filepath, out_dir):
+    path_elements = separate_and_strip_path_elements(filepath)
+    filename = path_elements[-1]
+    file_extension = get_file_extension(filename)
+
+    if file_extension in ["gz", "zip"]:
+        # just copy if already zipped
+        dst_filepath = os.path.join(out_dir, filename)
+        shutil.copyfile(filepath, dst_filepath)
+    else:
+        # gzip compress file
+        compressed_filename = f"{filename}.gz"
+        dst_filepath = os.path.join(out_dir, compressed_filename)
+        print(f"src_filepath: {filepath}")
+        print(f"dst_filepath: {dst_filepath}")
+        with open(filepath, "rb") as f_in:
+            with gzip.open(dst_filepath, "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+
+    return dst_filepath
+
+
+@log_exceptions
+def gzip_files(source_filepaths, out_dir):
+    compressed_source_filepaths = []
+    for src_filepath in source_filepaths:
+        dst_filepath = gzip_file(src_filepath, out_dir)
+        compressed_source_filepaths.append(dst_filepath)
+    return compressed_source_filepaths
 
 
 @log_exceptions
