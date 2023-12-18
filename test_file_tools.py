@@ -1,10 +1,13 @@
-from log_tools import log_exceptions
+import sys, path
+import pytest
+
+sys.path.append(path.Path(__file__).parent.abspath())  # for importing log_tools
+from log_tools import log_exceptions, setup_logger
 from file_tools import (
     strip_path_characters,
     separate_path_elements,
     separate_and_strip_path_elements,
 )
-import pytest
 
 
 def test_strip_path_characters():
@@ -85,6 +88,8 @@ def test_separate_and_strip_path_elements():
     assert result == expected_result
 
 
-test_strip_path_characters()
-test_separate_path_elements()
-test_separate_and_strip_path_elements()
+if __name__ == "__main__":
+    # pytest -W ignore::UserWarning -v
+    test_strip_path_characters()
+    test_separate_path_elements()
+    test_separate_and_strip_path_elements()

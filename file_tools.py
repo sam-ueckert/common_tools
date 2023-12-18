@@ -9,6 +9,7 @@ import path
 import yaml
 import sys
 import glob, os
+from logging import Logger
 
 # need this before importing from log_tools to prevent relative import issue
 sys.path.append(path.Path(__file__).parent.abspath())
@@ -176,34 +177,105 @@ def to_gzip_file(data_text: str, filename: str) -> None:
 
 
 @log_exceptions
-def cleanup_files(cleanup_dir, cleanup_prefix, cleanup_limit, use_logger=None):
+def get_file_prefix(filename: str, prefix_delimiter: str, use_logger: Logger = None):
     """
-    Cleanup local files
+    Get a files prefix based on delimiter (if present),
+     or (if not present) return filename without extension
+
+    Args:
+        filename (str): file name
+        prefix_delimiter (str): str to filename.split('prefix_delimiter')
+        use_logger (Logger, optional): _description_. Defaults to None.
+
+    Returns:
+        str: file prefix
     """
+    if prefix_delimiter in filename:
+        # case: we can split on prefix_delimiter, e.g., timestamp '_20'
+        prefix = filename.split(prefix_delimiter)[0]
+    else:
+        # case no prefix_delimiter in filename
+        if "." in filename:
+            # case: has extension
+            prefix = filename.split(".")[0]
+        else:
+            # case: has no extension
+            prefix = filename
+        if use_logger:
+            use_logger.info(
+                f"Cleanup: prefix delimiter '{prefix_delimiter}' not found in '{filename}', using prefix '{prefix}'"
+            )
+    return prefix
+
+
+@log_exceptions
+def get_file_extension(filename: str):
+    """
+    Returns a file's extension (if present) or ''
+
+    Args:
+        filename (str): file name
+
+    Returns:
+        str: .extension or ''
+    """
+    if "." in filename:
+        extension = f".{filename.split('.')[-1]}"
+    else:
+        extension = ""
+    return extension
+
+
+@log_exceptions
+def cleanup_files(
+    cleanup_dir: str,
+    filename: str,
+    cleanup_limit: int,
+    use_logger: Logger = None,
+):
+    """
+    Cleanup local files based on age
+
+    Args:
+        cleanup_dir (str): directory to search for files
+        filename (str): file name template to cleanup (see below)
+        cleanup_limit (int): number of (newest) files to keep
+        use_logger (Logger, optional): logging.Logger to print item deletions, errors, etc.
+
+    Description:
+        This uses the filename as a template for gathering other files with the
+        same:
+        prefix, e.g., 'file_name_2023_12_25.json' -> 'file_name_*'
+            and
+        extension, e.g., 'file_name_2023_12_25.json' -> 'json'
+
+        It then deletes files with this prefix and extension (oldest first) that
+        are above the count 'cleanup_limit'
+
+        For daily jobs, this effectively makes 'cleanup_limit' the number of days to keep
+    """
+
     shared_settings = get_shared_settings()
     prefix_delimiter = shared_settings["prefix_delimiter"]
-    # Get the list of all files in the directory that start with output_file
-    if prefix_delimiter in cleanup_prefix:
-        cleanup_prefix = cleanup_prefix.split(prefix_delimiter)[0]
-    file_list = glob.glob(os.path.join(cleanup_dir, cleanup_prefix + "*"))
-    # Create a dict to count the number of files for each extension
-    extension_counts = {}
+    prefix = get_file_prefix(filename, prefix_delimiter, use_logger=use_logger)
+    extension = get_file_extension(filename)
+    # Get the list of all files in the directory with same extension
+    #  that start with this prefix (newest first)
+    file_list = sorted(
+        glob.glob(os.path.join(cleanup_dir, f"{prefix}*{extension}")),
+        key=os.path.getmtime,
+    )
+    file_list.reverse()
 
+    # Delete oldest files if there are more than CLEANUP_LIMIT for cleanup_prefix
+    i = 0
     for file in file_list:
+        i += 1
         _, extension = os.path.splitext(file)
-        if extension not in extension_counts:
-            extension_counts[extension] = 1
-        else:
-            extension_counts[extension] += 1
-
-    # Delete files if there are more than CLEANUP_LIMIT for cleanup_prefix
-    for file in file_list:
-        _, extension = os.path.splitext(file)
-        if extension_counts[extension] > cleanup_limit:
+        if i > cleanup_limit:
             if use_logger:
-                use_logger.info(f"cleaning up file {file}")
+                use_logger.info(f"cleanup deleting up file {file}")
             os.remove(file)
-            extension_counts[extension] -= 1
 
 
 if __name__ == "__main__":
