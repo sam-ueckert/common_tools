@@ -7,8 +7,12 @@ import io
 import time
 import path
 import yaml
-from .log_tools import log_exceptions
+import sys
 import glob, os
+
+# need this before importing from log_tools to prevent relative import issue
+sys.path.append(path.Path(__file__).parent.abspath())
+from log_tools import log_exceptions
 
 
 @log_exceptions
@@ -21,6 +25,99 @@ def get_yaml_settings(directory, filename):
 def get_shared_settings():
     current_directory = path.Path(__file__).parent.abspath()
     return get_yaml_settings(current_directory, "shared_settings.yml")
+
+
+@log_exceptions
+def strip_path_characters(file_or_directory_name: str) -> str:
+    """
+    Case 1: Single element, e,g, '/logs' returns 'logs'
+    Case 2: multiple elements, e,g, './logs/2023/12/1/' returns 'logs/2023/12/1'
+
+    *** do not use anywhere you need an absolute path, this is used for relative paths
+    We use this function to make path/directory, or filename clean of characters that imply
+     a directory/path.
+     We do this to:
+       - Allow us to use the OS-indenpendant 'os.path.join()' to create the appropriate
+         path statement for the OS the script is running on, e.g., Linux vs Windows ('/' vs '\')
+       - Make directory or file names clean to use by removing path characters (/ \ . ..)
+       - Make directory or file names clean to use by removing junk characters not supported in paths (~ * # % & { } < > ? = + @ : ; ' " ! $ ` |)
+       - Make directory or file names clean to use by removing blank spaces not supported in paths
+
+    This take multiple passes to ensure we strip all bad characters from path items such as './logs$/@' (return 'logs')
+    """
+    bad_path_chars = [
+        " ",
+        "~",
+        "*",
+        ",",
+        "#",
+        "%",
+        "&",
+        "{",
+        "}",
+        "<",
+        ">",
+        "?",
+        "=",
+        "+",
+        "@",
+        ":",
+        ";",
+        "'",
+        '"',
+        "!",
+        "$",
+        "/",
+        "\\",
+        ".",
+        "..",
+        "`",
+        "|",
+    ]
+    passes = 10
+    i = 0
+    file_or_directory_name = str(file_or_directory_name)
+    while i <= passes:
+        i += 1
+        for bad_char in bad_path_chars:
+            file_or_directory_name = str(file_or_directory_name).strip(bad_char)
+    return file_or_directory_name
+
+
+@log_exceptions
+def separate_path_elements(path_str: str) -> list:
+    """
+    *** use strip_path_elements() instead if you also want each element cleaned of bad characters
+    Takes in a standard path of arbitrary length and returns a list of path elements
+    Examples:
+        '/dir/dir/dir/file' --> list['dir', 'dir', 'dir', 'file', ]
+        './dir/.dir/file/.' --> list['.', 'dir', '.dir', 'file', '.']
+        'dir\file' --> list['dir', 'file', ]
+    """
+    delimiters = ["/", "\\"]
+    for delimiter in delimiters:
+        path_str = " ".join(path_str.split(delimiter))
+    result = path_str.split()
+    return result
+
+
+@log_exceptions
+def separate_and_strip_path_elements(path_str: str) -> list:
+    """
+    Takes in a standard path of arbitrary length and returns a list of path elements
+    Examples:
+        '../dir/dir/dir/file' --> list['dir', 'dir', 'dir', 'file', ]
+        './dir/dir/file/.' --> list['dir', 'dir', 'file']
+        'dir\file' --> list['dir', 'file']
+
+    We use strip_path_characters() to clean each path element
+    """
+    path_elements = separate_path_elements(path_str)
+    cleaned_path_elements = []
+    for path_element in path_elements:
+        cleaned_path_element = strip_path_characters(path_element)
+        cleaned_path_elements.append(cleaned_path_element)
+    return cleaned_path_elements
 
 
 @log_exceptions
