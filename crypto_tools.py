@@ -108,8 +108,8 @@ class CryptoKeyOps:
             decrypted_key_filename = f"{encrypted_key_filename}.decrypted"
             decrypted_key_filepath = os.path.join(encrypted_key_directory_path, decrypted_key_filename)
 
-        decrypted_key_bytes = crypto_ops.decrypt_key_from_file(encrypted_key_filepath, passphrase)
-        crypto_ops.save_key_bytes_to_file(decrypted_key_bytes, decrypted_key_filepath)
+        decrypted_key_bytes = self.decrypt_key_from_file(encrypted_key_filepath, passphrase)
+        self.save_key_bytes_to_file(decrypted_key_bytes, decrypted_key_filepath)
 
         return decrypted_key_filepath
 
