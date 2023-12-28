@@ -199,8 +199,6 @@ def gzip_file(filepath, out_dir):
         # gzip compress file
         compressed_filename = f"{filename}.gz"
         dst_filepath = os.path.join(out_dir, compressed_filename)
-        print(f"src_filepath: {filepath}")
-        print(f"dst_filepath: {dst_filepath}")
         with open(filepath, "rb") as f_in:
             with gzip.open(dst_filepath, "wb") as f_out:
                 shutil.copyfileobj(f_in, f_out)
@@ -304,7 +302,6 @@ def get_newest_file_of_each_type_in_folder(folder_path):
     for file_type_key, file_type in file_types.items():
         filename = f"{file_type['prefix']}{prefix_delimiter}{file_type['extension']}"
         out_file = get_newest_file_of_type_in_folder(folder_path, filename)
-        print(f"using file: {out_file}")
         out_file_list.append(out_file)
     return out_file_list
 
