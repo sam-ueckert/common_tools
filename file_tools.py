@@ -268,6 +268,48 @@ def get_file_extension(filename: str):
 
 
 @log_exceptions
+def get_newest_file_of_type_in_folder(folder_path, filename):
+    print(f"looking for {filename} in {folder_path}")
+    shared_settings = get_shared_settings()
+    prefix_delimiter = shared_settings["prefix_delimiter"]
+    prefix = get_file_prefix(filename, prefix_delimiter)
+    extension = get_file_extension(filename)
+    file_list = sorted(
+        glob.glob(os.path.join(folder_path, f"{prefix}*{extension}")),
+        key=os.path.getmtime,
+    )
+    file_list.reverse()
+    return file_list[0]
+
+
+@log_exceptions
+def get_newest_file_of_each_type_in_folder(folder_path):
+    out_file_list = []
+    file_types = {}
+    shared_settings = get_shared_settings()
+    prefix_delimiter = shared_settings["prefix_delimiter"]
+    candidate_files = os.listdir(folder_path)
+    for candidate_file in candidate_files:
+        if candidate_file[0] not in [
+            ".",
+        ]:
+            prefix = get_file_prefix(candidate_file, prefix_delimiter)
+            extension = get_file_extension(candidate_file)
+            file_type_key = f"{prefix}_{extension}"
+            file_type = {
+                "prefix": prefix,
+                "extension": extension,
+            }
+            file_types[file_type_key] = file_type
+    for file_type_key, file_type in file_types.items():
+        filename = f"{file_type['prefix']}{prefix_delimiter}{file_type['extension']}"
+        out_file = get_newest_file_of_type_in_folder(folder_path, filename)
+        print(f"using file: {out_file}")
+        out_file_list.append(out_file)
+    return out_file_list
+
+
+@log_exceptions
 def cleanup_files(
     cleanup_dir: str,
     filename: str,
