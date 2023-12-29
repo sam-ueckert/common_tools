@@ -5,20 +5,22 @@ import os
 import path
 
 my_path = path.Path(__file__).parent.abspath()
-with open(f"{my_path / 'settings.yml'}", 'r') as f:
+with open(f"{my_path / 'settings.yml'}", "r") as f:
     settings = yaml.safe_load(f)
 
-# Get the password from the command line argument and decode it   
+
+# Get the password from the command line argument and decode it
 def decoder(encoded_password):
-    padding = '=' * ((4 - len(encoded_password) % 4) % 4)  # deterimine padding to add back
-    pw = base64.b64decode(encoded_password+padding)  # add required padding back to encoded pw
-    pw = pw.decode('utf-8')      # convert back from Unicode
+    padding = "=" * ((4 - len(encoded_password) % 4) % 4)  # deterimine padding to add back
+    pw = base64.b64decode(encoded_password + padding)  # add required padding back to encoded pw
+    pw = pw.decode("utf-8")  # convert back from Unicode
     return pw
 
 
 def encoder(password):
-    encoded_password = base64.b64encode(password.encode('utf-8'))
+    encoded_password = base64.b64encode(password.encode("utf-8"))
     return encoded_password
+
 
 class AsyncConsumer:
     def __init__(self, number_of_consumers: int, consumer, items):
@@ -33,13 +35,16 @@ class AsyncConsumer:
     async def produce(self):
         for item in self.items:
             await self.queue.put(item)
-            print(f'producing {item}...')
+            # print(f'producing {item}...') only for debugging
 
     async def run(self):
         producer = asyncio.create_task(self.produce())
         await producer
         # consumers = self.consume(self.number_of_consumers)
-        print(type(self.number_of_consumers))
-        self.endpiointData = await asyncio.gather(*[self.consumer(self.queue, self.out_queue) for _ in range(self.number_of_consumers)], return_exceptions=True)
+        print(f"Async starting with {self.number_of_consumers}")
+        self.endpiointData = await asyncio.gather(
+            *[self.consumer(self.queue, self.out_queue) for _ in range(self.number_of_consumers)],
+            return_exceptions=True,
+        )
 
         return self.endpiointData
