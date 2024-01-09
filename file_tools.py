@@ -288,17 +288,19 @@ def get_newest_file_of_each_type_in_folder(folder_path):
     prefix_delimiter = shared_settings["prefix_delimiter"]
     candidate_files = os.listdir(folder_path)
     for candidate_file in candidate_files:
-        if candidate_file[0] not in [
-            ".",
-        ]:
-            prefix = get_file_prefix(candidate_file, prefix_delimiter)
-            extension = get_file_extension(candidate_file)
-            file_type_key = f"{prefix}_{extension}"
-            file_type = {
-                "prefix": prefix,
-                "extension": extension,
-            }
-            file_types[file_type_key] = file_type
+        filepath = os.path.join(folder_path, candidate_file)
+        if os.path.isfile(filepath):
+            if candidate_file[0] not in [
+                ".",
+            ]:
+                prefix = get_file_prefix(candidate_file, prefix_delimiter)
+                extension = get_file_extension(candidate_file)
+                file_type_key = f"{prefix}_{extension}"
+                file_type = {
+                    "prefix": prefix,
+                    "extension": extension,
+                }
+                file_types[file_type_key] = file_type
     for file_type_key, file_type in file_types.items():
         filename = f"{file_type['prefix']}{prefix_delimiter}{file_type['extension']}"
         out_file = get_newest_file_of_type_in_folder(folder_path, filename)
