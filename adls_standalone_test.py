@@ -8,9 +8,11 @@ from fileclient_adls import AdlsConnection
 
 # Example usage:
    	# get credentials from command line arguments
-    tenant_id = sys.argv[1]
-	client_id = sys.argv[2]
-	client_secret = sys.argv[3]
+    tenant_id = ARGS.tenant_id
+    client_id = ARGS.client_id
+    client_secret = ARGS.client_secret
+    account_url = ARGS.account_url
+    file_system_name = ARGS.file_system_name
 
     # connect to ADLS filesystem "adt-calfit-adls"
     account_url = 'https://adt-calfit-adls@adtedfdatalake.dfs.core.windows.net/'  
@@ -42,6 +44,9 @@ import sys, os
 import time
 import json
 import argparse
+import time
+import gzip
+import io
 
 
 def to_gzip_file(data_text: str, filename: str) -> None:
@@ -261,25 +266,6 @@ class AdlsConnection:
         return paths
 
 
-##Example paths
-# /Logs/Redhat_Linux
-# /Landing/Redhat_Linux
-# /Landing/Redhat_Linux/Lifecycle
-# /Landing/Redhat_Linux/CVE
-# /Landing/Redhat_Linux/Hosts/2023/09/25/response_redhat_hosts_2023-09-25.json
-import time
-import gzip
-import io
-
-
-def to_gzip_file(data_text: str, filename: str) -> None:
-    with gzip.open(filename, "wb") as output:
-        # We cannot directly write Python objects like strings!
-        # We must first convert them into a bytes format using io.BytesIO() and then write it
-        with io.TextIOWrapper(output, encoding="utf-8") as encode:
-            encode.write(data_text)
-
-
 if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument(
@@ -315,13 +301,11 @@ if __name__ == "__main__":
 
     ARGS = arg_parser.parse_args()
     tenant_id = ARGS.tenant_id
-    client_id = ARGS.tenant_id
-    client_secret = ARGS.tenant_id
+    client_id = ARGS.client_id
+    client_secret = ARGS.client_secret
     account_url = ARGS.account_url
     file_system_name = ARGS.file_system_name
-    # account_url = "https://adtedfdatalake.dfs.core.windows.net/"
-    # file_system_name = "adt-calfit-adls"
-    adls_conn = AdlsConnection(tenant_id, client_id, client_secret, account_url, file_system_name)
+
     year = time.strftime("%Y")
     month = time.strftime("%m")
     day = time.strftime("%d")
@@ -334,37 +318,35 @@ if __name__ == "__main__":
     test_filename = f"test_delete_me_{timestamp}.txt.gz"
     test_upload_filepath = os.path.join(local_upload_path, test_filename)
     test_download_filepath = os.path.join(local_download_path, test_filename)
-
-    print("------------------")
-    adls_conn.list_directory_contents(directory=adls_test_path, recursive=True)
-    print("------------------")
+    adls_conn = AdlsConnection(tenant_id, client_id, client_secret, account_url, file_system_name)
 
     new_path = ""
     # create folders in ADLS
     for item in ["test", "delete_me", year, month, day]:
         new_path = f"{new_path}/{item}"
-        print(f"new_path: {new_path}")
+        print(f"new ADLS folder created: {new_path}")
         directory_client = adls_conn.create_directory(new_path)
 
-    # adls_conn.upload_file_to_directory(directory_client, "./", junk_filename)
-    # with open(junk_filename, mode="rb") as bytes_data:
-    to_gzip_file(test_data, test_filename)
-    with open(test_upload_filepath, mode="rb") as zipped_data:
-        adls_conn.upload_data_to_directory(directory_client, test_filename, zipped_data, overwrite=False)
+    # zip a file
+    to_gzip_file(test_data, test_upload_filepath)
+    
+    # upload file
+    adls_conn.upload_file_to_directory(directory_client, local_upload_path, test_filename, test_filename)
+
+    # short sleep before downloading the file we just uploaded
     time.sleep(2)
+    
+    # download the same file
     adls_conn.download_file_from_directory(directory_client, local_download_path, test_filename, test_filename)
 
+    # lis the contents of the upload directory
     adls_conn.list_directory_contents(directory=adls_test_path, recursive=True)
     directory_client = adls_conn.get_directory(directory_path=adls_test_path)
-    items = adls_conn.list_directory_contents(directory=directory_client, recursive=True, print_list=True)
-
+    
+    # verify downloaded content is same as we uploaded
     with gzip.open(test_download_filepath, "rb") as f:
-        file_content = f.read()
+        file_content = f.read().decode()
         if file_content == test_data:
             print(f"SUCCESS: test data matches")
         else:
             print(f"FAILED: file_content: '{file_content}', does not match test_data: '{test_data}'")
-
-    with open("test_unzip.json", "wb") as json_out:
-        json_out.write(file_content)
-        json_out.close()
