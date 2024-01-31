@@ -151,7 +151,7 @@ class AdlsConnection:
         directory_client: DataLakeDirectoryClient,
         local_path: str,
         file_name: str,
-        adls_filename: str | None = None,
+        adls_filename,
         overwrite=True,
     ) -> None:
         """
@@ -175,7 +175,7 @@ class AdlsConnection:
         self,
         directory_client: DataLakeDirectoryClient,
         adls_file_name: str,
-        data: str | bytes,
+        data,
         overwrite=True,
     ) -> None:
         """
@@ -198,7 +198,7 @@ class AdlsConnection:
 
     def list_directory_contents(
         self,
-        directory: str | DataLakeDirectoryClient,
+        directory,
         recursive: bool = False,
         print_tree=True,
         print_list=False,
@@ -222,7 +222,7 @@ class AdlsConnection:
 
         """
 
-        def _print_directory_contents(paths: ItemPaged, directory_path: str | None) -> None:
+        def _print_directory_contents(paths: ItemPaged, directory_path) -> None:
             if directory_path is None:
                 return
             else:
