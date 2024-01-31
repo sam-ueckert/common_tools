@@ -65,7 +65,6 @@ class AdlsConnection:
         """
         Setup connection and authenticate to ADLS
         account_url should look like: 'https://adt-calfit-adls@adtedfdatalake.dfs.core.windows.net/'
-        file_system_name should look like: 'adt-calfit-adls'
         """
         if disable_http_logging:
             import logging
@@ -301,24 +300,6 @@ if __name__ == "__main__":
         required=True,
     )
     arg_parser.add_argument(
-        "-t",
-        "--tenant_id",
-        help="Tenant ID for accessing ADLS",
-        required=True,
-    )
-    arg_parser.add_argument(
-        "-c",
-        "--client_id",
-        help="Client ID for accessing ADLS",
-        required=True,
-    )
-    arg_parser.add_argument(
-        "-s",
-        "--client_secret",
-        help="Client Secret (password) for accessing ADLS",
-        required=True,
-    )
-    arg_parser.add_argument(
         "-k",
         "--account_key",
         help="Client Secret (password) for accessing ADLS",
@@ -326,13 +307,10 @@ if __name__ == "__main__":
     )
 
     ARGS = arg_parser.parse_args()
-    tenant_id = ARGS.tenant_id
-    client_id = ARGS.tenant_id
-    client_secret = ARGS.tenant_id
+    account_key = ARGS.account_key
     account_url = ARGS.account_url
     file_system_name = ARGS.file_system_name
-    # account_url = "https://adtedfdatalake.dfs.core.windows.net/"
-    # file_system_name = "adt-calfit-adls"
+
     adls_conn = AdlsConnection(account_key, account_url, file_system_name)
     year = time.strftime("%Y")
     month = time.strftime("%m")

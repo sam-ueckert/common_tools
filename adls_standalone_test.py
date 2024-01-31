@@ -67,7 +67,7 @@ class AdlsConnection:
         client_secret: str,
         account_url: str,
         file_system_name: str,
-        disable_http_logging: bool = True,
+        disable_http_logging: bool = False,
     ) -> None:
         """
         Setup connection and authenticate to ADLS
@@ -329,20 +329,20 @@ if __name__ == "__main__":
 
     # zip a file
     to_gzip_file(test_data, test_upload_filepath)
-    
+
     # upload file
     adls_conn.upload_file_to_directory(directory_client, local_upload_path, test_filename, test_filename)
 
     # short sleep before downloading the file we just uploaded
     time.sleep(2)
-    
+
     # download the same file
     adls_conn.download_file_from_directory(directory_client, local_download_path, test_filename, test_filename)
 
     # lis the contents of the upload directory
     adls_conn.list_directory_contents(directory=adls_test_path, recursive=True)
     directory_client = adls_conn.get_directory(directory_path=adls_test_path)
-    
+
     # verify downloaded content is same as we uploaded
     with gzip.open(test_download_filepath, "rb") as f:
         file_content = f.read().decode()
