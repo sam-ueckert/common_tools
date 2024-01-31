@@ -67,7 +67,7 @@ class AdlsConnection:
         client_secret: str,
         account_url: str,
         file_system_name: str,
-        disable_http_logging: bool = True,
+        disable_http_logging: bool = False,
     ) -> None:
         """
         Setup connection and authenticate to ADLS
