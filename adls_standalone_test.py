@@ -324,7 +324,7 @@ if __name__ == "__main__":
     # create folders in ADLS
     for item in ["test", "delete_me", year, month, day]:
         new_path = f"{new_path}/{item}"
-        print(f"new ADLS folder created: {new_path}")
+        print(f"creating new ADLS folder: {new_path}")
         directory_client = adls_conn.create_directory(new_path)
 
     # zip a file
