@@ -83,10 +83,14 @@ class AdlsConnection:
         credential = ClientSecretCredential(tenant_id, client_id, client_secret)
         self.service_client = DataLakeServiceClient(account_url=account_url, credential=credential)
         print(f"dir(self.service_client): {dir(self.service_client)}")
+        for item in dir(self.service_client):
+            print(item)
         self.file_system_name = file_system_name
         if self.service_client:
             self.file_system_client = self.service_client.get_file_system_client(file_system=file_system_name)
             print(f"dir(self.file_system_client): {dir(self.file_system_client)}")
+            for item in dir(self.file_system_client):
+                print(item)
 
     def get_file_system_client(self, file_system_name: str) -> None:
         """
