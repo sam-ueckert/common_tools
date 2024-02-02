@@ -327,7 +327,7 @@ if __name__ == "__main__":
 
     local_upload_path = "./test/upload"
     local_download_path = "./test/download"
-    adls_test_path = "/test/delete_me"
+    adls_test_path = "/Logs/test/delete_me"
     test_filename = f"test_delete_me_{timestamp}.txt.gz"
     test_upload_filepath = os.path.join(local_upload_path, test_filename)
     test_download_filepath = os.path.join(local_download_path, test_filename)
@@ -335,7 +335,7 @@ if __name__ == "__main__":
 
     new_path = ""
     # create folders in ADLS
-    for item in ["test", "delete_me", year, month, day]:
+    for item in ["Logs", "test", "delete_me", year, month, day]:
         new_path = f"{new_path}/{item}"
         print(f"creating new ADLS folder: {new_path}")
         directory_client = adls_conn.create_directory(new_path)
