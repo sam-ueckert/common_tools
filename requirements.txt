@@ -8,3 +8,5 @@ pycparser==2.21
 pycryptodome==3.19.1
 pytest==7.4.3
 PyYAML==6.0.1
+azure-identity
+azure-storage-file-datalake
