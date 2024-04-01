@@ -3,6 +3,7 @@ import asyncio
 import base64
 import os
 import path
+import argparse
 
 my_path = path.Path(__file__).parent.abspath()
 with open(f"{my_path / 'settings.yml'}", "r") as f:
@@ -21,6 +22,15 @@ def encoder(password):
     encoded_password = base64.b64encode(password.encode("utf-8"))
     return encoded_password
 
+# Loads arguments to parse from settings file, loaded from the 'parameters' slice of the 'executables' dictionay
+def argument_loader(arg_map: dict, parser: argparse.ArgumentParser):
+    # args_list = []
+    for key, value in arg_map.items():
+        argument = value["argument"]
+        help_text = value["help"]
+        parser.add_argument(f'--{key}', f'-{argument}', help=help_text, required=True)
+    
+    return parser
 
 class AsyncConsumer:
     def __init__(self, number_of_consumers: int, consumer, items):
