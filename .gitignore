@@ -1,6 +1,5 @@
 .venv
 *.pyc
-settings.yml
 dev
 __pycache__
 .pytest_cache

@@ -95,7 +95,7 @@ if __name__ == "__main__":
     test_separate_and_strip_path_elements()
     from file_tools import get_newest_file_of_each_type_in_folder
 
-    newest_files = get_newest_file_of_each_type_in_folder("/mnt/c/Users/bretcoo/repos/InfBIDshbrds-Redhat/out")
+    newest_files = get_newest_file_of_each_type_in_folder("./")
     print("----------------------------")
     for newest_file in newest_files:
         print(newest_file)

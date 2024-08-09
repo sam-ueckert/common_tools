@@ -1,7 +1,21 @@
 # this is a template file for settings.yml. copy it to settings.yml
-citrix_lifecycle_url: "https://www.citrix.com/support/product-lifecycle/product-matrix.html"
+citrix_lifecycle_url: "https://example.com/lifecycle.json"
 output_dir: "./output"
-service_account_username: "wsospowerbisvc"
-iics_vip: "etladtvip.adt.np.costco.com"
-scp_destination_directory: "/INFA/IICS/SrcFiles/INFRA/Response/Citrix"
+service_account_username: "serviecact"
+scp_destination_directory: "/example/directory"
 lifecycle_filename: "citrix_lifecycle.json"
+
+# The following is loaded from the argument loader. This defines arguments for the executable to expect.
+parameters: 
+  snmp_username:
+    argument: "-u"
+    key_vault-name: "SNMPv3-username"
+    help: "SNMPv3-username"
+  snmp_password:
+    argument: "-p"
+    key_vault-name: "SNMPv3-password"
+    help: "ADVA-SNMPv3-password"
+  snmp_key:
+    argument: "-k"
+    key_vault-name: "SNMPv3-privacykey"
+    help: "SNMPv3-privacykey"

@@ -34,6 +34,7 @@ log.exception("exception")
 """
 import logging, logging.config
 import functools
+import json
 from typing import Callable, ParamSpec, TypeVar, Optional
 
 
@@ -42,7 +43,7 @@ RetType = TypeVar("RetType")
 OriginalFunc = Callable[Param, RetType]
 DecoratedFunc = Callable[Param, RetType]
 
-def log_exceptions(func:OriginalFunc=None, re_raise: Optional[bool]=True) -> DecoratedFunc:
+def log_exceptions(func:OriginalFunc=None, re_raise: Optional[bool]=True, logger: Optional[logging.Logger]=None) -> DecoratedFunc:
     if func is None:
         return functools.partial(log_exceptions, re_raise=re_raise)
 
@@ -51,7 +52,8 @@ def log_exceptions(func:OriginalFunc=None, re_raise: Optional[bool]=True) -> Dec
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            logger = logging.getLogger(func.__name__)
+            if logger is None:
+                logger = logging.getLogger(func.__name__)
             logger.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
             if re_raise:
                 raise e
@@ -61,7 +63,7 @@ def log_exceptions(func:OriginalFunc=None, re_raise: Optional[bool]=True) -> Dec
 @log_exceptions
 def setup_logger(filename='') -> logging.Logger:
     DEFAULT_LOGGING = {
-    'version': 1,
+    'version': 1, # TODO move this to json logging config file
     'disable_existing_loggers': False,
     'formatters': { 
         'standard': { 
